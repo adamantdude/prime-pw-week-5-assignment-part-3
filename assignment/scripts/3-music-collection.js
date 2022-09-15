@@ -25,7 +25,7 @@ function findByArtist(search) {
     // for every object in object-array collection, loop
     // indexOf returns -1 if not found
     // push the object into results array
-    for(const item of collection) if(item.artist.indexOf(search) >= 0) results.push(item);
+    for(const item of collection) if(item.artist.toUpperCase().indexOf(search.toUpperCase()) >= 0) results.push(item);
     return results;
 }
 
@@ -33,26 +33,39 @@ function search(searchObject) {
     // !'' = true and !null = true, therefore if either searchObject element is empty, return the collection
     // implement early exit if possible
     if(!searchObject || !searchObject.artist || !searchObject.year) return collection;
-    let results = [];
+    let results = []; // object array
+    // if there is no searchTrack; no specific track to search route, only album
     if(!searchObject.searchTrack) {
         for(const item of collection) {
+            // non-case sensitive search of the artist's name
             if(item.artist.toUpperCase().indexOf(searchObject.artist.toUpperCase()) >= 0 && (item.year === searchObject.year))
+                // push entire object into array
                 results.push(item);
         }
     }
+    // if there exists a searchTrack; specific track to search route
     else {
         for(const item of collection) {
+            // non-case sensitive search of the artist's name
             if(item.artist.toUpperCase().indexOf(searchObject.artist.toUpperCase()) >= 0 && (item.year === searchObject.year))
+                // if the artist and year is found, run through the tracks list to find the specific track
                 for(let i=0; i<item.tracks.length; ++i) 
-                    if(Object.keys(item.tracks[i])[0].toUpperCase() === searchObject.searchTrack.toUpperCase())
+                    // non-case sensitive search of the track, using the keys of the array of objects. `object{key:value}`
+                    // `Object.keys()` returns an array of keys, each object in the `item.tracks` object array only contains one key each, therefore
+                    // `Object.keys()[0]` returns the only key within the `item.tracks[i]` object
+                    // indexOf() returns -1 if not found (falsy), >= 0 otherwise (truthy).
+                    if(Object.keys(item.tracks[i])[0].toUpperCase().indexOf(searchObject.searchTrack.toUpperCase()) >= 0)
+                        // push an entire object similar to song objects into the results array
+                        // with only the singular track found
                         results.push({
-                            title:item.title,
-                            artist:item.artist,
-                            year:item.year,
-                            tracks:item.tracks[i]
+                            title: item.title,
+                            artist: item.artist,
+                            year: item.year,
+                            tracks: item.tracks[i]
                         });
         }
     }
+    // default return for empty array / failed searches
     return results;
 }
 
@@ -71,17 +84,13 @@ console.log(collection);
 
 showCollection(collection);
 
-console.log('Searching for artist with "Bruno"');
-console.log(findByArtist('Bruno'));
+console.log('Searching for artist with "Bruno"',findByArtist('Bruno'));
 
-console.log('Searching for artist with "Demon"');
-console.log(findByArtist('Demon'));
+console.log('Searching for artist with "Demon"',findByArtist('Demon'));
 
-console.log('Searching for artist with "Taisei"');
-console.log(findByArtist('Taisei'));
+console.log('Searching for artist with "Taisei"',findByArtist('Taisei'));
 
-console.log('Searching for artist with "and"');
-console.log(findByArtist('and'));
+console.log('Searching for artist with "and"',findByArtist('and'));
 
 console.log('Search test with showCollection() using previous search');
 showCollection(findByArtist('and'));
@@ -92,8 +101,8 @@ let newSearch = {
     searchTrack: "Hydra"
 };
 
-console.log('search() test with newSearch object');
-console.log(search(newSearch));         // should return with one object array
+console.log('search() test with newSearch object', newSearch);
+console.log('results returned:',search(newSearch));         // should return with one object array
 
 let newSearchTwo = {
     artist: 'Ray Charles',
@@ -101,8 +110,8 @@ let newSearchTwo = {
     searchTrack: null
 };
 
-console.log('search() test with newSearchTwo object');
-console.log(search(newSearchTwo));      // should return empty array
+console.log('search() test with newSearchTwo object', newSearchTwo);
+console.log('results returned:',search(newSearchTwo));      // should return empty array
 
 let newSearchThree = {
     artist: "MYTH & ROID",
@@ -110,8 +119,8 @@ let newSearchThree = {
     searchTrack: 'VORACITY'
 };
 
-console.log('search() test with newSearchThree');
-console.log(search(newSearchThree));
+console.log('search() test with newSearchThree', newSearchThree);
+console.log('results returned:',search(newSearchThree));
 
 let newSearchFour = {
     artist: "Demondice",
@@ -119,8 +128,8 @@ let newSearchFour = {
     searchTrack: "fake ass gold"
 };
 
-console.log('search() test with newSearchFour');
-console.log(search(newSearchFour));
+console.log('search() test with newSearchFour', newSearchFour);
+console.log('results returned:',search(newSearchFour));
 
 let emptySearch = {
     artist: '',             // empty
@@ -138,8 +147,8 @@ let emptySearchThree;       // empty
 
 console.log('--- three search() tests with empty objects / missing elements; should return full collection each ---');
 
-console.log(search(emptySearch));
+console.log(search(emptySearch), emptySearch);
 
-console.log(search(emptySearchTwo));
+console.log(search(emptySearchTwo), emptySearchTwo);
 
-console.log(search(emptySearchThree));
+console.log(search(emptySearchThree), emptySearchThree);
